@@ -6,7 +6,7 @@
 # do Censo 2022.
 
 
-# 1 - Importação dos pacotes ####
+# 1 - Importação dos pacotes ##################################################
 
 # Linha de código para apagar todos os objetos do environment para evitar sobreposições
 rm(list=ls())
@@ -37,7 +37,9 @@ library(skimr)
 library(gt)
 library(readxl)
 
-# 2 - Importação das bases do Censo ####
+
+
+# 2 - Importação das bases do Censo ############################################
 
 # HELP da função utilizada nesse script
 ?censobr::read_tracts
@@ -97,6 +99,8 @@ responsavel_renda <- read_tracts(
   cache = TRUE
 )%>%
   filter(code_state == 33)
+
+
 
 ## 2.1 - Manipulação das 4 bases do censo para juntar em apenas uma base ####
 
@@ -168,10 +172,19 @@ base_mun$code_muni = as.factor(base_mun$code_muni)
 
 ## 2.3 - Exportando a base a nível municipal ####
 
-base_mun |>
-  write_csv2(file = "Bases/base_censo2022_rj.xlsx")
+# base_mun |>
+#   write_csv2(file = "Bases/base_censo2022_rj.csv")
 
-# 3 - Indicadores ####
+#exportando em xslx, buscando maior eficiencia e reprodutibildiade de dados
+base_mun %>%
+  write_excel_csv2(file = "Bases/base_censo2022_rj.xlsx" )
+
+# apagar todos os objetos diferente da base que vamos usar para desenvolver os indicadores
+rm(list = setdiff(ls(), "base_mun"))
+
+
+
+# 3 - Indicadores ##############################################################
 
 ## Indicadores Demográficos ####
 
@@ -272,6 +285,9 @@ ind9 <- base_mun %>%
 summary(ind9)
 # Não há dados faltantes
 
+
+
+
 ## Indicadores de Saúde ####
 
 ### 3.10 - Indicador da Coleta de Lixo Adequada ####
@@ -303,6 +319,10 @@ ind11 <- base_mun %>%
 summary(ind11)
 # Não há dados faltantes
 
+
+
+
+
 ## Indicadores Econômicos ####
 
 ### 3.12 - Indicador da Taxa de Renda Domiciliar Per Capita Municipal ####
@@ -328,6 +348,9 @@ ind13 <- base_mun %>%
 summary(ind13)
 # Não há dados faltantes
 
+
+
+
 ## Indicadores Educacional ####
 
 ### 3.14 - Indicador do Índice de Baixa Escolaridade Estimada ####
@@ -352,7 +375,9 @@ ind15 <- base_mun %>%
 summary(ind15)
 # Não há dados faltantes
 
-# 4 - Base dos indicadores criados acima ####
+
+
+# 4 - Base dos indicadores criados acima #######################################
 indicadores_df <- ind1 %>%
   left_join(ind2,  by = c("code_muni","name_muni")) %>%
   left_join(ind3,  by = c("code_muni","name_muni")) %>%
@@ -376,7 +401,18 @@ indicadores_df <- indicadores_df %>%
 # Visualizando a base de indicadores
 View(indicadores_df)
 
+
+
+
 ## 4.1 - Exportando a base dos indicadores municipal ####
 
-indicadores_df |>
-  write_csv2(file = "Bases/base_indicadores_rj.xlsx")
+# buscando eficiencia em compatacação
+# indicadores_df |>
+#   write_csv2(file = "Bases/base_indicadores_rj.csv")
+
+
+# Em formato Excel (xlsx) para melhor visualização
+indicadores_df %>%
+  write_excel_csv2(file = "Bases/base_indicadores_rj.xlsx")
+
+
