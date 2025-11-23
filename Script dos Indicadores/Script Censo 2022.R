@@ -261,7 +261,7 @@ ind7 <- base_mun %>%
 summary(ind7)
 # Não há dados faltantes
 
-### 3.8 - Indicador do Tamanho Médio do Domicílio ####
+### 3.8 - Indicador do Tamanho Médio do Domicílio (pessoas por domicilio) ####
 ind8 <- base_mun %>%
   mutate(tamanho_medio_dom = V0001 / domicilio01_V00001) %>%
   select(code_muni, name_muni, tamanho_medio_dom)
@@ -414,5 +414,85 @@ View(indicadores_df)
 # Em formato Excel (xlsx) para melhor visualização
 indicadores_df %>%
   write_excel_csv2(file = "Bases/base_indicadores_rj.xlsx")
+
+
+
+
+# 99999 - Tabela ajustada - Criando tabela grafica para os indcadores do RJ ##########################
+
+indicadores_df %>%
+  select(-code_muni) %>%
+  gt() %>%
+  tab_header(
+    title = md("**Indicadores**"),
+    subtitle = md("*Rio de janeiro - Censo 2022*")
+  ) %>%
+  opt_row_striping() %>%  # colocar linhas alternadas de cor
+  cols_align(align = "center")%>%
+  cols_align(align = "left", columns = c(name_muni)) %>%  # verificar se vale a pena deixar isso aq
+  tab_style(
+    style = list(
+      cell_fill(color = "lightgrey"),
+      cell_text(weight = "bold")
+    ),
+    locations = cells_column_labels(everything())
+  ) %>%
+  cols_label(
+    name_muni = md("Municipios"),
+    densidade_demografica = md("Densidade demografica \n (pessoas/km²)"),
+    indice_de_urbanizacao = "Proporção de urbanização", #alterei esse
+    razao_dependencia = "Razão de dependencia",
+    proporcao_idosos = "Proporção  de idosos",
+    prop_chefes_mulheres = "Proporção de chefes de família mulheres",
+    pfsp="Proporção de Filhos Sem Presença Paterna",
+    tamanho_medio_dom = "Tamanho médio do domicílio \n (pessoas/domicilio)",
+    prop_internet= "Proporção de domicílios com internet",
+    coleta_lixo="Proporção de domicílios com coleta de lixo adequada",
+    prop_esgoto="Proporção de domicílios com Esgoto Adequado",
+    renda_baixa="Taxa de população de baixa renda (por 100 mil habitantes)", #verificcar esse pois nao achei bom
+    ise= "Taxa de Segurança Econômica",
+    ibe="Taxa de Baixa Escolaridade Estimada",
+    iese="Taxa de Escolaridade Superior Estimada" #esse ta tudo dando 100% ta estranho
+  ) %>%
+  #fmt_number(columns = everything(), decimals = 2) %>% #nao ficou bom
+  fmt_percent(
+    columns = c(indice_de_urbanizacao,
+                proporcao_idosos,
+                prop_chefes_mulheres,
+                pfsp,prop_internet,
+                coleta_lixo,
+                prop_esgoto),
+    decimals = 2
+   )# %>%
+  # fmt_number(
+  #   columns = densidade_demografica,   # sua variável
+  #   decimals = 2,
+  #   suffixing = FALSE,
+  #   pattern = "{x}  p/km²"
+  # )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
