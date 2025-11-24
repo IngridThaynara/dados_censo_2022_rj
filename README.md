@@ -24,13 +24,13 @@ A densidade demográfica indica o grau de concentração populacional no municí
 
 **Variáveis**
 
--   $\text{pop}_m = V0001_m$\
--   $\text{area}_m = \text{area\_km2}_m$
+-   $\text{pop}_m = V0001_m$
+-   $\text{area}_m = \text{area\\_km2}_m$
 
 **Fórmula**
 
 $$
-\text{densidade\_demografica}_m = 
+\text{densidade\\_demografica}_m = 
 \frac{\text{pop}_m}{\text{area}_m}
 $$
 
@@ -42,13 +42,13 @@ O índice de urbanização mede a proporção de moradores em áreas urbanas no 
 
 **Variáveis**
 
--   $\text{urb}_m = V0002_m$\
+-   $\text{urb}_m = V0002_m$
 -   $\text{pop}_m = V0001_m$
 
 **Fórmula**
 
 $$
-\text{indice\_de\_urbanizacao}_m =
+\text{indice\\_de\\_urbanizacao}_m =
 \frac{\text{urb}_m}{\text{pop}_m}
 $$
 
@@ -60,15 +60,15 @@ A razão de dependência expressa a relação entre a população dependente (0�
 
 **Variáveis**
 
--   $\text{pop0\_14}_m = V01031_m + V01032_m + V01033_m$\
--   $\text{pop15\_64}_m = V01034_m + V01035_m + V01036_m + V01037_m + V01038_m$\
+-   $\text{pop0\\_14}_m = V01031_m + V01032_m + V01033_m$
+-   $\text{pop15\\_64}_m = V01034_m + V01035_m + V01036_m + V01037_m + V01038_m$
 -   $\text{pop65mais}_m = V01039_m + V01040_m + V01041_m$
 
 **Fórmula**
 
 $$
-\text{razao\_dependencia}_m =
-\frac{\text{pop0\_14}_m + \text{pop65mais}_m}{\text{pop15\_64}_m}
+\text{razao\\_dependencia}_m =
+\frac{\text{pop0\\_14}_m + \text{pop65mais}_m}{\text{pop15\\_64}_m}
 $$
 
 ------------------------------------------------------------------------
@@ -79,13 +79,13 @@ Indica a participação da população idosa (65 anos ou mais) do município $m$
 
 **Variáveis**
 
--   $\text{idosos}_m = V01039_m + V01040_m + V01041_m$\
+-   $\text{idosos}_m = V01039_m + V01040_m + V01041_m$
 -   $\text{pop}_m = V0001_m$
 
 **Fórmula**
 
 $$
-\text{proporcao\_idosos}_m =
+\text{proporcao\\_idosos}_m =
 \frac{\text{idosos}_m}{\text{pop}_m}
 $$
 
@@ -97,13 +97,13 @@ Mede a proporção de domicílios chefiados por mulheres no município $m$, impo
 
 **Variáveis**
 
--   $\text{chefesTotais}_m = V01062_m + V01063_m$\
+-   $\text{chefesTotais}_m = V01062_m + V01063_m$
 -   $\text{chefesMulheres}_m = V01063_m$
 
 **Fórmula**
 
 $$
-\text{prop\_chefes\_mulheres}_m =
+\text{prop\\_chefes\\_mulheres}_m =
 \frac{\text{chefesMulheres}_m}{\text{chefesTotais}_m}
 $$
 
@@ -115,7 +115,7 @@ Mostra a proporção de crianças e adolescentes sem presença paterna no munic�
 
 **Variáveis**
 
--   $\text{filhosSemPai}_m = V01045_m$\
+-   $\text{filhosSemPai}_m = V01045_m$
 -   $\text{filhosTotais}_m =
     V01042_m + V01043_m + V01044_m + V01045_m +
     V01046_m + V01047_m + V01048_m + V01049_m + V01050_m$
@@ -135,13 +135,13 @@ Indica o número médio de moradores por domicílio no município $m$.
 
 **Variáveis**
 
--   $\text{pop}_m = V0001_m$\
--   $\text{domicilios}_m = \text{domicilio01\_V00001}_m$
+-   $\text{pop}_m = V0001_m$
+-   $\text{domicilios}_m = \text{domicilio01\\_V00001}_m$
 
 **Fórmula**
 
 $$
-\text{tamanho\_medio\_dom}_m =
+\text{tamanho\\_medio\\_dom}_m =
 \frac{\text{pop}_m}{\text{domicilios}_m}
 $$
 
@@ -159,12 +159,12 @@ Indica a proporção de domicílios com acesso à internet no município $m$, im
     V00298_m + V00299_m + V00300_m + V00301_m +
     V00302_m + V00303_m + V00304_m + V00305_m$
 
--   $\text{domicilios}_m = \text{domicilio01\_V00001}_m$
+-   $\text{domicilios}_m = \text{domicilio01\\_V00001}_m$
 
 **Fórmula**
 
 $$
-\text{prop\_internet}_m =
+\text{prop\\_internet}_m =
 \frac{\text{internet}_m}{\text{domicilios}_m}
 $$
 
@@ -176,7 +176,7 @@ Avalia a proporção de domicílios que possuem coleta de lixo adequada no munic
 
 **Variáveis**
 
--   $\text{lixoAdeq}_m = V00397_m + V00398_m$\
+-   $\text{lixoAdeq}_m = V00397_m + V00398_m$
 -   $\text{lixoTotal}_m =
     V00397_m + V00398_m + V00399_m + V00400_m +
     V00401_m + V00402_m + V00403_m$
@@ -184,7 +184,7 @@ Avalia a proporção de domicílios que possuem coleta de lixo adequada no munic
 **Fórmula**
 
 $$
-\text{coleta\_lixo}_m =
+\text{coleta\\_lixo}_m =
 \frac{\text{lixoAdeq}_m}{\text{lixoTotal}_m}
 $$
 
@@ -196,7 +196,7 @@ Mostra a parcela de domicílios com esgotamento sanitário adequado no municípi
 
 **Variáveis**
 
--   $\text{esgotoAdeq}_m = V00309_m$\
+-   $\text{esgotoAdeq}_m = V00309_m$
 -   $\text{esgotoTotal}_m =
     V00309_m + V00310_m + V00311_m + V00312_m +
     V00313_m + V00314_m + V00315_m + V00316_m$
@@ -204,7 +204,7 @@ Mostra a parcela de domicílios com esgotamento sanitário adequado no municípi
 **Fórmula**
 
 $$
-\text{prop\_esgoto}_m =
+\text{prop\\_esgoto}_m =
 \frac{\text{esgotoAdeq}_m}{\text{esgotoTotal}_m}
 $$
 
@@ -216,13 +216,13 @@ Indica a proporção da população com renda mais baixa no município $m$.
 
 **Variáveis**
 
--   $\text{baixaRenda}_m = V06001_m + V06002_m$\
+-   $\text{baixaRenda}_m = V06001_m + V06002_m$
 -   $T_m = V06001_m + V06002_m + V06003_m + V06004_m + V06005_m$
 
 **Fórmula**
 
 $$
-\text{renda\_baixa}_m =
+\text{renda\\_baixa}_m =
 \frac{\text{baixaRenda}_m}{T_m}
 $$
 
@@ -234,7 +234,7 @@ Expressa a razão entre população de baixa renda e de alta renda no município
 
 **Variáveis**
 
--   $BR_m = V06001_m + V06002_m$\
+-   $BR_m = V06001_m + V06002_m$
 -   $AR_m = V06004_m + V06005_m$
 
 **Fórmula**
@@ -252,7 +252,7 @@ Indica a proporção da população com ensino superior no município $m$, impor
 
 **Variáveis**
 
--   $ES_m = V06004_m + V06005_m$\
+-   $ES_m = V06004_m + V06005_m$
 -   $T_m =
     V06001_m + V06002_m + V06003_m + V06004_m + V06005_m$
 
