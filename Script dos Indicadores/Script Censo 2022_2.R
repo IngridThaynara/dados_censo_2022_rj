@@ -110,7 +110,6 @@ intersect(names(basico), names(pessoas)) |> intersect(names(domicilio)) |> inter
 
 # Criando um vetor com as 29 primeiras variáveis do basico
 chaves <- names(basico)[1:29]
-
 # Fazendo o join usando apenas essas variáveis como chave
 base <- basico %>%
   left_join(pessoas, by = chaves) %>%
@@ -137,33 +136,51 @@ fixas_proibidas <- c(
 fixas <- names(base)[1:29]
 fixas_validas <- setdiff(fixas, fixas_proibidas)
 
-# Variáveis que não podem ser somadas nunca
+# Variáveis que nunca devem ser somadas
 nao_somar <- c(fixas_proibidas, fixas_validas)
 
-# Variáveis realmente somáveis (numéricas e não proibidas)
+# Variáveis numéricas que podem ser agregadas
 variaveis_somar <- base %>%
   select(-all_of(nao_somar)) %>%
   select(where(is.numeric)) %>%
   names()
 
-# EVITAR QUE code_muni APAREÇA POR ACIDENTE:
-variaveis_somar <- setdiff(variaveis_somar, c("code_muni"))
+# Remover code_muni por segurança
+variaveis_somar <- setdiff(variaveis_somar, "code_muni")
 
-# Agregando a base a nível municipal:
+# ---- VARIÁVEIS DE RENDA QUE DEVEM SER AGRUPADAS POR MÉDIA ----
+variaveis_renda <- c("V06001", "V06002", "V06003", "V06004", "V06005")
+
+# Variáveis somáveis EXCLUINDO as de renda
+variaveis_soma_final <- setdiff(variaveis_somar, variaveis_renda)
+
+# Agregando a base a nível municipal
 base_mun <- base %>%
   group_by(code_muni, name_muni) %>%
   summarise(
     across(all_of(fixas_validas), first),
+
+    # Área deve ser sempre somada
     area_km2 = sum(area_km2, na.rm = TRUE),
-    across(all_of(variaveis_somar), ~ sum(.x, na.rm = TRUE)),
+
+    # SOMA para todas as variáveis numéricas exceto renda
+    across(all_of(variaveis_soma_final), ~ sum(.x, na.rm = TRUE)),
+
+    # MÉDIA para as variáveis de renda
+    across(all_of(variaveis_renda), ~ mean(.x, na.rm = TRUE)),
+
     .groups = "drop"
   )
 
-# Tratamento da base municipal para retirada de variáveis que não serão usadas
+# Retirada de variáveis não utilizadas
 base_mun <- base_mun |>
-  select(-c(code_intermediate,name_intermediate,code_immediate,name_immediate,code_urban_concentration,name_urban_concentration))
+  select(
+    -c(code_intermediate, name_intermediate,
+       code_immediate, name_immediate,
+       code_urban_concentration, name_urban_concentration)
+  )
 
-# Verificando a quantidade de dados faltantes nas colunas
+# Verificando dados faltantes
 gg_miss_var(base_mun)
 glimpse(base_mun)
 
