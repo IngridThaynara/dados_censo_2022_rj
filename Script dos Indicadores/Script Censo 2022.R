@@ -183,6 +183,13 @@ base_mun %>%
 rm(list = setdiff(ls(), "base_mun"))
 
 
+#export em txt por tamanho do arquivo
+base_mun %>%
+  write_delim(file = "Bases/base_censo2022_rj.txt",delim = ";")
+
+
+
+
 
 # 3 - Indicadores ##############################################################
 
@@ -228,13 +235,38 @@ ind4 <- base_mun %>%
 summary(ind4)
 # Não há dados faltantes
 
-### 3.5 - Indicador da Taxa de Domicílios Permanentes ####
-# ind5 <- base_mun %>%
-#   mutate(prop_dom_permanentes = (domicilio01_V00010 / domicilio01_V00001)*10000) %>%
-#   select(code_muni, name_muni, prop_dom_permanentes)
-#
-# summary(ind5)
-# Não há dados faltantes
+
+### 3.5 - Indicador da Predominancia de Raca ####
+
+ind5 <- base_mun %>%
+  group_by(code_muni, name_muni) %>%
+  summarise(
+    raca_V01317, #Cor ou raça é branca
+    raca_V01318, #Cor ou raça é preta
+    raca_V01319, #Cor ou raça é amarela
+    raca_V01320, #Cor ou raça é parda
+    raca_V01321 #Cor ou raça é indígena
+  ) %>%
+  rowwise() %>%
+  mutate(
+    raca_predominante = {
+      vals <- c_across(c(raca_V01317,
+                         raca_V01318,
+                         raca_V01319,
+                         raca_V01320,
+                         raca_V01321))
+      nomes <- c("branca",
+                 "preta",
+                 "amarela",
+                 "parda",
+                 "indígena")
+      nomes[which.max(vals)]
+    }
+  ) %>%
+  ungroup() %>%
+  select(code_muni,name_muni,raca_predominante)
+
+
 
 ### 3.6 - Indicador da Proporção de Chefes Mulheres ####
 ind6 <- base_mun %>%
@@ -246,6 +278,8 @@ ind6 <- base_mun %>%
 
 summary(ind6)
 # Não há dados faltantes
+
+
 
 ### 3.7 - Indicador da Proporção de Filhos Sem Presença Paterna (PFSP) ####
 ind7 <- base_mun %>%
@@ -268,6 +302,9 @@ ind8 <- base_mun %>%
 
 summary(ind8)
 # Não há dados faltantes
+
+
+
 
 ### 3.9 - Indicador de Domicílios com Internet ####
 ind9 <- base_mun %>%
@@ -305,6 +342,9 @@ ind10 <- base_mun %>%
 summary(ind10)
 # Não há dados faltantes
 
+
+
+
 ### 3.11 - Indicador do Esgoto Adequado ####
 ind11 <- base_mun %>%
   mutate(
@@ -336,44 +376,23 @@ ind12 <- base_mun %>%
 summary(ind12)
 # Não há dados faltantes
 
-### 3.13 - Indicador do Índice de Segurança Econômica (ISE) ####
+
+
+
+
+### 3.13 - Indicador de Porte Populacional ####
 ind13 <- base_mun %>%
-  mutate(
-    baixa_renda = V06001 + V06002,
-    alta_renda  = V06004 + V06005,
-    ise = baixa_renda / alta_renda * 100000
-  ) %>%
-  select(code_muni, name_muni, ise)
+  group_by(code_muni,name_muni) %>%
+  summarise(
+    porte_populacional = case_when(
+      (V0001) <= 50000 ~ "Pequeno",
+      (V0001) > 50000 & (demografia_V01006) <= 100000 ~ "Médio",
+      (V0001) > 100000 & (demografia_V01006) <= 500000 ~ "Grande",
+      (V0001) > 50000 ~ "Muito grande",
+    )
+  )%>%
+  select(code_muni, name_muni, porte_populacional)
 
-summary(ind13)
-# Não há dados faltantes
-
-
-
-
-## Indicadores Educacional ####
-
-### 3.14 - Indicador do Índice de Baixa Escolaridade Estimada ####
-ind14 <- base_mun %>%
-  mutate(
-    ibe = (V06001 + V06002) /
-      (V06001 + V06002 + V06003 + V06004 + V06005) *100000
-  ) %>%
-  select(code_muni, name_muni, ibe)
-
-summary(ind14)
-# Não há dados faltantes
-
-### 3.15 - Indicador do Índice de Escolaridade Superior Estimada (IESE) ####
-ind15 <- base_mun %>%
-  mutate(
-    iese = (V06004 + V06005) /
-      (V06001 + V06002 + V06003 + V06004 + V06005)
-  ) %>%
-  select(code_muni, name_muni, iese)
-
-summary(ind15)
-# Não há dados faltantes
 
 
 
@@ -382,7 +401,7 @@ indicadores_df <- ind1 %>%
   left_join(ind2,  by = c("code_muni","name_muni")) %>%
   left_join(ind3,  by = c("code_muni","name_muni")) %>%
   left_join(ind4,  by = c("code_muni","name_muni")) %>%
-  #left_join(ind5,  by = c("code_muni","name_muni")) %>%
+  left_join(ind5,  by = c("code_muni","name_muni")) %>%
   left_join(ind6,  by = c("code_muni","name_muni")) %>%
   left_join(ind7,  by = c("code_muni","name_muni")) %>%
   left_join(ind8,  by = c("code_muni","name_muni")) %>%
@@ -390,9 +409,7 @@ indicadores_df <- ind1 %>%
   left_join(ind10, by = c("code_muni","name_muni")) %>%
   left_join(ind11, by = c("code_muni","name_muni")) %>%
   left_join(ind12, by = c("code_muni","name_muni")) %>%
-  left_join(ind13, by = c("code_muni","name_muni")) %>%
-  left_join(ind14, by = c("code_muni","name_muni")) %>%
-  left_join(ind15, by = c("code_muni","name_muni"))
+  left_join(ind13, by = c("code_muni","name_muni"))
 
 # Manipulação para que todos os indicadores tenha apenas 4 casas decimais
 indicadores_df <- indicadores_df %>%
@@ -400,8 +417,6 @@ indicadores_df <- indicadores_df %>%
 
 # Visualizando a base de indicadores
 View(indicadores_df)
-
-
 
 
 ## 4.1 - Exportando a base dos indicadores municipal ####
@@ -450,9 +465,8 @@ indicadores_df %>%
     coleta_lixo="Proporção de domicílios com coleta de lixo adequada",
     prop_esgoto="Proporção de domicílios com Esgoto Adequado",
     renda_baixa="Taxa de população de baixa renda (por 100 mil habitantes)", #verificcar esse pois nao achei bom
-    ise= "Taxa de Segurança Econômica",
-    ibe="Taxa de Baixa Escolaridade Estimada",
-    iese="Taxa de Escolaridade Superior Estimada" #esse ta tudo dando 100% ta estranho
+    porte_populacional = "Porte populacional",
+    raca_predominante = "Raça predominante"
   ) %>%
   #fmt_number(columns = everything(), decimals = 2) %>% #nao ficou bom
   fmt_percent(
