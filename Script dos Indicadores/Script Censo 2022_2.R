@@ -206,7 +206,7 @@ base_mun %>%
 
 
 # deixar só o base_mun
-rm(list = ls()[ls() != "base_mun"])
+##rm(list = ls()[ls() != "base_mun"])
 
 
 
@@ -222,37 +222,68 @@ ind1 <- base_mun %>%
 summary(ind1)
 # Não há dados faltantes
 
+
+
+
 ### 3.2 - Indicador do Índice de Urbanização ####
-ind2 <- base_mun %>%
-  mutate(indice_de_urbanizacao = V0002 / V0001) %>%
-  select(code_muni, name_muni, indice_de_urbanizacao)
+
+
+ind2 = basico %>%
+  group_by(code_muni,name_muni,situacao) %>%
+  summarise(pop = sum(V0001,na.rm = T) ) %>%
+  pivot_wider(names_from = situacao,values_from = pop) %>%
+  mutate(urbanizacao = sum(Urbana,na.rm = T)/(sum(Urbana,na.rm = T) + sum(Rural,na.rm = T)+ sum(NA,na.rm = T))) %>%
+  select(code_muni,name_muni,urbanizacao) %>%
+  mutate(code_muni = as_factor(code_muni))
+
+
 
 summary(ind2)
 # Não há dados faltantes
 
+
+
+
+
+
 ### 3.3 - Indicador da Razão de Dependência ####
 ind3 <- base_mun %>%
   mutate(
-    pop_0_14   = demografia_V01031 + demografia_V01032 + demografia_V01033,
-    pop_15_64  = demografia_V01034 + demografia_V01035 + demografia_V01036 + demografia_V01037 + demografia_V01038,
-    pop_65mais = demografia_V01039 + demografia_V01040 + demografia_V01041,
-    razao_dependencia = (pop_0_14 + pop_65mais) / pop_15_64
+    pop_0_14   = demografia_V01031 +
+      demografia_V01032 +
+      demografia_V01033,
+    pop_15_59  = demografia_V01034 +
+      demografia_V01035 +
+      demografia_V01036 +
+      demografia_V01037 +
+      demografia_V01038 +
+      demografia_V01039,
+    pop_60mais =
+      demografia_V01040 +
+      demografia_V01041,
+    razao_dependencia = (pop_0_14 + pop_60mais) / pop_15_59
   ) %>%
   select(code_muni, name_muni, razao_dependencia)
 
 summary(ind3)
 # Não há dados faltantes
 
+
+
+
 ### 3.4 - Indicador da Proporção de Idosos (65+) ####
 ind4 <- base_mun %>%
   mutate(
-    pop_65mais = demografia_V01039 + demografia_V01040 + demografia_V01041,
-    proporcao_idosos = pop_65mais / V0001
+    pop_60mais = demografia_V01040 + demografia_V01041,
+    proporcao_idosos = pop_60mais / V0001
   ) %>%
   select(code_muni, name_muni, proporcao_idosos)
 
 summary(ind4)
 # Não há dados faltantes
+
+
+
 
 
 ### 3.5 - Indicador da Predominancia de Raca ####
@@ -274,10 +305,10 @@ ind5 <- base_mun %>%
                          raca_V01319,
                          raca_V01320,
                          raca_V01321))
-      nomes <- c("branca",
-                 "preta",
-                 "amarela",
-                 "parda",
+      nomes <- c("Branca",
+                 "Preta",
+                 "Amarela",
+                 "Parda",
                  "indígena")
       nomes[which.max(vals)]
     }
@@ -290,7 +321,9 @@ ind5 <- base_mun %>%
 ### 3.6 - Indicador da Proporção de Chefes Mulheres ####
 ind6 <- base_mun %>%
   mutate(
-    total_chefes = parentesco_V01062 + parentesco_V01063,
+    total_chefes = parentesco_V01062 +
+      parentesco_V01063,
+
     prop_chefes_mulheres = parentesco_V01063 / total_chefes
   ) %>%
   select(code_muni, name_muni, prop_chefes_mulheres)
@@ -300,23 +333,28 @@ summary(ind6)
 
 
 
-### 3.7 - Indicador da Proporção de Filhos Sem Presença Paterna (PFSP) ####
+
+
+### 3.7 - Indicador da Razão de mulheres sobre homens no municipio ####
 ind7 <- base_mun %>%
-  mutate(
-    filhos_sem_pai = parentesco_V01045,
-    filhos_total   = parentesco_V01042 + parentesco_V01043 + parentesco_V01044 +
-      parentesco_V01045 + parentesco_V01046 + parentesco_V01047 +
-      parentesco_V01048 + parentesco_V01049 + parentesco_V01050,
-    pfsp = filhos_sem_pai / filhos_total
-  ) %>%
-  select(code_muni, name_muni, pfsp)
+  select(code_muni, name_muni,
+         demografia_V01007,#	Sexo masculino
+         demografia_V01008#	Sexo feminino
+         ) %>%
+  mutate(prop_mulher = demografia_V01008 / demografia_V01007) %>%
+  select(code_muni, name_muni, prop_mulher)
 
 summary(ind7)
 # Não há dados faltantes
 
+
+
+
 ### 3.8 - Indicador do Tamanho Médio do Domicílio (pessoas por domicilio) ####
 ind8 <- base_mun %>%
-  mutate(tamanho_medio_dom = V0001 / domicilio01_V00001) %>%
+  mutate(tamanho_medio_dom = V0001 #total pop
+         / domicilio01_V00001 #Domicílios Particulares Permanentes Ocupados
+         ) %>%
   select(code_muni, name_muni, tamanho_medio_dom)
 
 summary(ind8)
@@ -325,18 +363,31 @@ summary(ind8)
 
 
 
-### 3.9 - Indicador de Domicílios com Internet ####
+
+## Indicadores de Saúde ####
+
+### 3.9 - Indicador da Coleta de Lixo Adequada ####
 ind9 <- base_mun %>%
-  mutate(
-    dom_internet = domicilio02_V00290 + domicilio02_V00291 + domicilio02_V00292 +
-      domicilio02_V00293 + domicilio02_V00294 + domicilio02_V00295 +
-      domicilio02_V00296 + domicilio02_V00297 + domicilio02_V00298 +
-      domicilio02_V00299 + domicilio02_V00300 + domicilio02_V00301 +
-      domicilio02_V00302 + domicilio02_V00303 + domicilio02_V00304 +
-      domicilio02_V00305,
-    prop_internet = dom_internet / domicilio01_V00001
+  select(code_muni, name_muni,
+         domicilio02_V00397,#		Domicílios Particulares Permanentes Ocupados, Lixo coletado no domicílio por serviço de limpeza
+         domicilio02_V00398,#		Domicílios Particulares Permanentes Ocupados, Lixo depositado em caçamba de serviço de limpeza
+         domicilio02_V00399,#		Domicílios Particulares Permanentes Ocupados, Lixo queimado na propriedade
+         domicilio02_V00400,#		Domicílios Particulares Permanentes Ocupados, Lixo enterrado na propriedade
+         domicilio02_V00401,#		Domicílios Particulares Permanentes Ocupados, Lixo jogado em terreno baldio, encosta ou área pública
+         domicilio02_V00402#		Domicílios Particulares Permanentes Ocupados, Outro destino do lixo
   ) %>%
-  select(code_muni, name_muni, prop_internet)
+  mutate(
+    lixo_adequado = domicilio02_V00397 +
+      domicilio02_V00398,
+    lixo_total= (domicilio02_V00397 +
+      domicilio02_V00398 +
+      domicilio02_V00399 +
+      domicilio02_V00400 +
+      domicilio02_V00401 +
+      domicilio02_V00402) ,
+    coleta_lixo = lixo_adequado / lixo_total
+  ) %>%
+  select(code_muni, name_muni, coleta_lixo)
 
 summary(ind9)
 # Não há dados faltantes
@@ -344,19 +395,32 @@ summary(ind9)
 
 
 
-## Indicadores de Saúde ####
-
-### 3.10 - Indicador da Coleta de Lixo Adequada ####
+### 3.10 - Indicador do Esgoto Adequado ####
 ind10 <- base_mun %>%
-  mutate(
-    lixo_adequado = domicilio02_V00397 + domicilio02_V00398,
-    lixo_total    = domicilio02_V00397 + domicilio02_V00398 +
-      domicilio02_V00399 + domicilio02_V00400 +
-      domicilio02_V00401 + domicilio02_V00402 +
-      domicilio02_V00403,
-    coleta_lixo = lixo_adequado / lixo_total
-  ) %>%
-  select(code_muni, name_muni, coleta_lixo)
+  select(code_muni,
+         name_muni,
+         domicilio02_V00309,#		Domicílios Particulares Permanentes Ocupados, Destinação do esgoto do banheiro ou sanitário ou buraco para dejeções é rede geral ou pluvial
+         domicilio02_V00310,#		Domicílios Particulares Permanentes Ocupados, Destinação do esgoto do banheiro ou sanitário ou buraco para dejeções é fossa séptica ou fossa filtro ligada à rede
+         domicilio02_V00311,#		Domicílios Particulares Permanentes Ocupados, Destinação do esgoto do banheiro ou sanitário ou buraco para dejeções é fossa séptica ou fossa filtro não ligada à rede
+         domicilio02_V00312,#		Domicílios Particulares Permanentes Ocupados, Destinação do esgoto do banheiro ou sanitário ou buraco para dejeções é fossa rudimentar ou buraco
+         domicilio02_V00313,#		Domicílios Particulares Permanentes Ocupados, Destinação do esgoto do banheiro ou sanitário ou buraco para dejeções é vala
+         domicilio02_V00314,#		Domicílios Particulares Permanentes Ocupados, Destinação do esgoto do banheiro ou sanitário ou buraco para dejeções é rio, lago, córrego ou mar
+         domicilio02_V00315,#		Domicílios Particulares Permanentes Ocupados, Destinação do esgoto do banheiro ou sanitário ou buraco para dejeções é outra forma
+         domicilio02_V00316	#  	Domicílios Particulares Permanentes Ocupados, Destinação do esgoto inexistente, pois não tinham banheiro nem sanitário
+         ) %>%
+  mutate(esgoto_adequado = domicilio02_V00309 +
+           domicilio02_V00310 +
+           domicilio02_V00311,
+         total_esgotos = domicilio02_V00309 +
+           domicilio02_V00310 +
+           domicilio02_V00311 +
+           domicilio02_V00312 +
+           domicilio02_V00313 +
+           domicilio02_V00314 +
+           domicilio02_V00315 +
+           domicilio02_V00316,
+         prop_esgoto_adequado = esgoto_adequado/total_esgotos) %>%
+  select(code_muni, name_muni, prop_esgoto_adequado)
 
 summary(ind10)
 # Não há dados faltantes
@@ -364,16 +428,20 @@ summary(ind10)
 
 
 
-### 3.11 - Indicador do Esgoto Adequado ####
+
+
+## Indicadores Econômicos ####
+
+### 3.11 - Indicador da Razão do Valor do rendimento nominal médio mensal sobre o salario minimo ####
+# salario minimo de referencia em dez/2022 = R$ 1212,00
 ind11 <- base_mun %>%
-  mutate(
-    esgoto_total    = domicilio02_V00309 + domicilio02_V00310 + domicilio02_V00311 +
-      domicilio02_V00312 + domicilio02_V00313 + domicilio02_V00314 +
-      domicilio02_V00315 + domicilio02_V00316,
-    esgoto_adequado = domicilio02_V00309,
-    prop_esgoto = esgoto_adequado / esgoto_total
+  select(code_muni, name_muni,
+         V06004#Valor do rendimento nominal médio mensal das pessoas responsáveis com rendimentos por domicílios particulares permanentes ocupados
   ) %>%
-  select(code_muni, name_muni, prop_esgoto)
+  mutate(IRRSM = V06004/1212) %>%
+  #mutate(valor_presente = 1518*IRRSM) %>%  # em 11/2025 o salario minimo é de R$1518
+  select(code_muni, name_muni, IRRSM#,valor_presente
+         )
 
 summary(ind11)
 # Não há dados faltantes
@@ -382,25 +450,8 @@ summary(ind11)
 
 
 
-## Indicadores Econômicos ####
-
-### 3.12 - Indicador da Taxa de Renda Domiciliar Per Capita Municipal ####
+### 3.12 - Indicador de Porte Populacional ####
 ind12 <- base_mun %>%
-  mutate(
-    renda_baixa = (V06001 + V06002) /
-      (V06001 + V06002 + V06003 + V06004 + V06005)*100000
-  ) %>%
-  select(code_muni, name_muni, renda_baixa)
-
-summary(ind12)
-# Não há dados faltantes
-
-
-
-
-
-### 3.13 - Indicador de Porte Populacional ####
-ind13 <- base_mun %>%
   group_by(code_muni,name_muni) %>%
   summarise(
     porte_populacional = case_when(
@@ -411,6 +462,9 @@ ind13 <- base_mun %>%
     )
   )%>%
   select(code_muni, name_muni, porte_populacional)
+
+
+summary(ind12)
 
 
 
@@ -427,8 +481,7 @@ indicadores_df <- ind1 %>%
   left_join(ind9,  by = c("code_muni","name_muni")) %>%
   left_join(ind10, by = c("code_muni","name_muni")) %>%
   left_join(ind11, by = c("code_muni","name_muni")) %>%
-  left_join(ind12, by = c("code_muni","name_muni")) %>%
-  left_join(ind13, by = c("code_muni","name_muni"))
+  left_join(ind12, by = c("code_muni","name_muni"))
 
 # Manipulação para que todos os indicadores tenha apenas 4 casas decimais
 indicadores_df <- indicadores_df %>%
@@ -474,27 +527,26 @@ indicadores_df %>%
   cols_label(
     name_muni = md("Municipios"),
     densidade_demografica = md("Densidade demografica \n (pessoas/km²)"),
-    indice_de_urbanizacao = "Proporção de urbanização", #alterei esse
+    urbanizacao = "Proporção de urbanização", #alterei esse
     razao_dependencia = "Razão de dependencia",
     proporcao_idosos = "Proporção  de idosos",
     prop_chefes_mulheres = "Proporção de chefes de família mulheres",
-    pfsp="Proporção de Filhos Sem Presença Paterna",
+    prop_mulher = "Razão de mulheres sobre homens no municipio",
     tamanho_medio_dom = "Tamanho médio do domicílio \n (pessoas/domicilio)",
-    prop_internet= "Proporção de domicílios com internet",
     coleta_lixo="Proporção de domicílios com coleta de lixo adequada",
-    prop_esgoto="Proporção de domicílios com Esgoto Adequado",
-    renda_baixa="Taxa de população de baixa renda (por 100 mil habitantes)", #verificcar esse pois nao achei bom
+    prop_esgoto_adequado="Proporção de domicílios com Esgoto Adequado",
+    IRRSM="Razão do Rendimento Nominal Médio sobre o Salário Mínimo", #verificcar esse pois nao achei bom
     porte_populacional = "Porte populacional",
     raca_predominante = "Raça predominante"
   ) %>%
   #fmt_number(columns = everything(), decimals = 2) %>% #nao ficou bom
   fmt_percent(
-    columns = c(indice_de_urbanizacao,
+    columns = c(urbanizacao,
                 proporcao_idosos,
                 prop_chefes_mulheres,
-                pfsp,prop_internet,
                 coleta_lixo,
-                prop_esgoto),
+                prop_esgoto_adequado
+                ),
     decimals = 2
    )# %>%
   # fmt_number(
