@@ -37,8 +37,6 @@ library(skimr)
 library(gt)
 library(readxl)
 
-
-
 # 2 - Importação das bases do Censo ############################################
 
 # HELP da função utilizada nesse script
@@ -236,13 +234,11 @@ ind2 = basico %>%
   select(code_muni,name_muni,urbanizacao) %>%
   mutate(code_muni = as_factor(code_muni))
 
-
+ind2 = ind2 %>%
+  mutate(urbanizacao = 100* urbanizacao)
 
 summary(ind2)
 # Não há dados faltantes
-
-
-
 
 
 
@@ -279,11 +275,11 @@ ind4 <- base_mun %>%
   ) %>%
   select(code_muni, name_muni, proporcao_idosos)
 
+ind4 = ind4 %>%
+  mutate(proporcao_idosos = 100* proporcao_idosos)
+
 summary(ind4)
 # Não há dados faltantes
-
-
-
 
 
 ### 3.5 - Indicador da Predominancia de Raca ####
@@ -328,11 +324,11 @@ ind6 <- base_mun %>%
   ) %>%
   select(code_muni, name_muni, prop_chefes_mulheres)
 
+ind6 = ind6 %>%
+  mutate(prop_chefes_mulheres = 100* prop_chefes_mulheres)
+
 summary(ind6)
 # Não há dados faltantes
-
-
-
 
 
 ### 3.7 - Indicador da Razão de mulheres sobre homens no municipio ####
@@ -389,6 +385,10 @@ ind9 <- base_mun %>%
   ) %>%
   select(code_muni, name_muni, coleta_lixo)
 
+ind9 = ind9 %>%
+  mutate(coleta_lixo = 100* coleta_lixo)
+
+
 summary(ind9)
 # Não há dados faltantes
 
@@ -421,6 +421,9 @@ ind10 <- base_mun %>%
            domicilio02_V00316,
          prop_esgoto_adequado = esgoto_adequado/total_esgotos) %>%
   select(code_muni, name_muni, prop_esgoto_adequado)
+
+ind10 = ind10 %>%
+  mutate(prop_esgoto_adequado = 100* prop_esgoto_adequado)
 
 summary(ind10)
 # Não há dados faltantes
@@ -555,29 +558,3 @@ indicadores_df %>%
   #   suffixing = FALSE,
   #   pattern = "{x}  p/km²"
   # )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
