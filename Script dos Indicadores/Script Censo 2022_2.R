@@ -22,6 +22,7 @@ rm(list=ls())
 # install.packages("skimr")
 # install.packages("gt")
 # install.packages("readxl")
+# install.packages("openxlsx")
 
 # Mesmo que você já tenha instalado os pacotes anterios, é necessário instalar o
 # pacote do censobr. Caso você já tenha instalado, comentar a próxima linha.
@@ -36,6 +37,7 @@ library(naniar)
 library(skimr)
 library(gt)
 library(readxl)
+library(openxlsx)
 
 # 2 - Importação das bases do Censo ############################################
 
@@ -502,9 +504,7 @@ View(indicadores_df)
 
 
 # Em formato Excel (xlsx) para melhor visualização
-indicadores_df %>%
-  write_excel_csv2(file = "Bases/base_indicadores_rj.xlsx")
-
+openxlsx::write.xlsx(indicadores_df, file = "Bases/base_indicadores_rj.xlsx")
 
 
 
