@@ -219,6 +219,9 @@ ind1 <- base_mun %>%
   mutate(densidade_demografica = V0001 / area_km2) %>%
   select(code_muni, name_muni, densidade_demografica)
 
+ind1 <- ind1 |>
+  rename(densidade_demografica = densidade_demografica)
+
 summary(ind1)
 # Não há dados faltantes
 
@@ -238,6 +241,9 @@ ind2 = basico %>%
 
 ind2 = ind2 %>%
   mutate(urbanizacao = 100* urbanizacao)
+
+ind2 <- ind2 |>
+  rename(IU = urbanizacao)
 
 summary(ind2)
 # Não há dados faltantes
@@ -263,6 +269,9 @@ ind3 <- base_mun %>%
   ) %>%
   select(code_muni, name_muni, razao_dependencia)
 
+ind3 <- ind3 |>
+  rename(razao_dependencia = razao_dependencia)
+
 summary(ind3)
 # Não há dados faltantes
 
@@ -279,6 +288,9 @@ ind4 <- base_mun %>%
 
 ind4 = ind4 %>%
   mutate(proporcao_idosos = 100* proporcao_idosos)
+
+ind4 <- ind4 |>
+  rename( IPI = proporcao_idosos)
 
 summary(ind4)
 # Não há dados faltantes
@@ -314,7 +326,8 @@ ind5 <- base_mun %>%
   ungroup() %>%
   select(code_muni,name_muni,raca_predominante)
 
-
+ind5 <- ind5 |>
+  rename(IPR = raca_predominante)
 
 ### 3.6 - Indicador da Proporção de Chefes Mulheres ####
 ind6 <- base_mun %>%
@@ -329,6 +342,9 @@ ind6 <- base_mun %>%
 ind6 = ind6 %>%
   mutate(prop_chefes_mulheres = 100* prop_chefes_mulheres)
 
+ind6 <- ind6 |>
+  rename(IPCM = prop_chefes_mulheres)
+
 summary(ind6)
 # Não há dados faltantes
 
@@ -342,6 +358,9 @@ ind7 <- base_mun %>%
   mutate(prop_mulher = demografia_V01008 / demografia_V01007) %>%
   select(code_muni, name_muni, prop_mulher)
 
+ind7 <- ind7 |>
+  rename(IRMH = prop_mulher)
+
 summary(ind7)
 # Não há dados faltantes
 
@@ -354,6 +373,9 @@ ind8 <- base_mun %>%
          / domicilio01_V00001 #Domicílios Particulares Permanentes Ocupados
          ) %>%
   select(code_muni, name_muni, tamanho_medio_dom)
+
+ind8 <- ind8 |>
+  rename(tamanho_medio_dom = tamanho_medio_dom)
 
 summary(ind8)
 # Não há dados faltantes
@@ -390,6 +412,8 @@ ind9 <- base_mun %>%
 ind9 = ind9 %>%
   mutate(coleta_lixo = 100* coleta_lixo)
 
+ind9 = ind9 %>%
+  rename(ICLA = coleta_lixo)
 
 summary(ind9)
 # Não há dados faltantes
@@ -427,6 +451,9 @@ ind10 <- base_mun %>%
 ind10 = ind10 %>%
   mutate(prop_esgoto_adequado = 100* prop_esgoto_adequado)
 
+ind10 = ind10 %>%
+  rename(IEA = prop_esgoto_adequado)
+
 summary(ind10)
 # Não há dados faltantes
 
@@ -448,6 +475,9 @@ ind11 <- base_mun %>%
   select(code_muni, name_muni, IRRSM#,valor_presente
          )
 
+ind11 = ind11 %>%
+  rename(IRRSM = IRRSM)
+
 summary(ind11)
 # Não há dados faltantes
 
@@ -468,6 +498,8 @@ ind12 <- base_mun %>%
   )%>%
   select(code_muni, name_muni, porte_populacional)
 
+ind12 = ind12 %>%
+  rename(porte_populacional = porte_populacional)
 
 summary(ind12)
 
